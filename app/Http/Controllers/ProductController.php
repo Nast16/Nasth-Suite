@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product; // Jangan lupa import Model Product yang tadi dibuat
 use Illuminate\Http\Request;
+use App\Models\Cashbook;
 
 class ProductController extends Controller
 {
@@ -75,6 +76,32 @@ class ProductController extends Controller
             'stock' => $request->stock,
         ]);
 
+        return redirect('/products');
+    }
+
+    public function sell($id)
+    {
+        // 1. Cari produk yang dijual
+        $product = Product::findOrFail($id);
+
+        // 2. Validasi: Cek apakah stok masih ada
+        if ($product->stock < 1) {
+            return redirect('/products')->with('error', 'Stok kopi sudah habis!');
+        }
+
+        // 3. Kurangi stok produk sebanyak 1, lalu simpan perubahan
+        $product->update([
+            'stock' => $product->stock - 1
+        ]);
+
+        // 4. KEAJAIBAN INTEGRASI: Otomatis catat uang masuk ke tabel Cashbook!
+        Cashbook::create([
+            'type' => 'income',
+            'amount' => $product->price,
+            'description' => 'Penjualan: ' . $product->name,
+        ]);
+
+        // 5. Kembalikan ke halaman daftar produk
         return redirect('/products');
     }
 }

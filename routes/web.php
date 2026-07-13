@@ -7,6 +7,7 @@ Route::get('/', function () {
 });
 
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CashbookController;
 
 Route::get('/products', [ProductController::class, 'index']);
 // Route untuk memproses data yang dikirim dari form (method-nya POST)
@@ -17,3 +18,9 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::get('/products/{id}/edit', [ProductController::class, 'edit']);
 // Route untuk memproses update data (Method PUT)
 Route::put('/products/{id}', [ProductController::class, 'update']);
+// Route untuk memproses tombol Jual 1
+Route::post('/products/{id}/sell', [ProductController::class, 'sell']);
+// Route untuk melihat halaman buku kas
+Route::get('/cashbook', [CashbookController::class, 'index']);
+// Route untuk menyimpan transaksi kas manual
+Route::post('/cashbook', [CashbookController::class, 'store']);

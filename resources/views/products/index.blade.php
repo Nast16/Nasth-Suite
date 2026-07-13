@@ -42,6 +42,11 @@
                 <td>Rp {{ number_format($product->price) }}</td>
                 <td>{{ $product->stock }}</td>
                 <td>
+                    <!-- Tombol Jual 1 (Menggunakan Form POST karena akan mengubah data stok dan kas) -->
+                    <form action="/products/{{ $product->id }}/sell" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" style="background-color: #4CAF50; color: white;">Jual 1</button>
+                    </form>
                     <!-- Tombol Edit (Berupa Link biasa yang mengarah ke halaman edit) -->
                     <a href="/products/{{ $product->id }}/edit">
                         <button type="button">Edit</button>
