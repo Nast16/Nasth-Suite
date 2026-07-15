@@ -6,6 +6,22 @@
 <form method="POST" action="{{ route('register') }}">
     @csrf
 
+    <!-- Nama Toko / UMKM -->
+    <div class="mb-3">
+        <label class="form-label text-muted small fw-bold">Nama Toko / UMKM</label>
+        <input type="text" name="organization_name" class="form-control" required autofocus>
+    </div>
+
+    <!-- Jenis Bisnis -->
+    <div class="mb-3">
+        <label class="form-label text-muted small fw-bold">Jenis Bisnis</label>
+        <select name="organization_type" class="form-select" required>
+            <option value="Coffee Shop">Coffee Shop</option>
+            <option value="Laundry">Laundry</option>
+            <option value="Toko Kelontong">Toko Kelontong/Kelontong</option>
+        </select>
+    </div>
+
     <!-- Nama -->
     <div class="mb-3">
         <label class="form-label text-muted small fw-bold">Nama Lengkap</label>
