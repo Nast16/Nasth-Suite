@@ -2,9 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\DashboardController;
+use App\Http\Middleware\DisableHeadersCache;
+
+// Sekarang halaman utama root (/) akan menampilkan Dashboard Terpusat
+Route::get('/', [DashboardController::class, 'index'])->middleware(DisableHeadersCache::class);
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CashbookController;
