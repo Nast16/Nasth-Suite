@@ -8,6 +8,7 @@ Route::get('/', function () {
 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CashbookController;
+use App\Http\Controllers\TaskController;
 
 Route::get('/products', [ProductController::class, 'index']);
 // Route untuk memproses data yang dikirim dari form (method-nya POST)
@@ -24,3 +25,11 @@ Route::post('/products/{id}/sell', [ProductController::class, 'sell']);
 Route::get('/cashbook', [CashbookController::class, 'index']);
 // Route untuk menyimpan transaksi kas manual
 Route::post('/cashbook', [CashbookController::class, 'store']);
+// Halaman utama daftar tugas
+Route::get('/tasks', [TaskController::class, 'index']);
+
+// Proses tambah tugas
+Route::post('/tasks', [TaskController::class, 'store']);
+
+// Proses menandai tugas selesai
+Route::post('/tasks/{id}/complete', [TaskController::class, 'complete']);
