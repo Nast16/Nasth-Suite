@@ -13,7 +13,14 @@
         <div class="bg-white p-5 rounded shadow-sm mb-5 text-center">
             <h1 class="display-5 text-primary fw-bold">Nasth Suite</h1>
             <p class="lead text-muted">Asisten Digital Operasional UMKM yang Sederhana, Efisien, dan Terintegrasi</p>
-            <span class="badge bg-primary px-3 py-2">Mode: Single-Tenant MVP</span>
+            <div class="d-flex justify-content-center align-items-center gap-2">
+                <span class="badge bg-primary px-3 py-2">Mode: Single-Tenant MVP</span>
+                <!-- Tombol Logout Bawaan Breeze agar User Bisa Keluar -->
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-danger fw-bold px-3">Logout</button>
+                </form>
+            </div>
         </div>
 
         <!-- Baris Ringkasan Data (Metrik Toko) -->
