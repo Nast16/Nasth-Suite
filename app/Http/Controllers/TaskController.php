@@ -9,8 +9,14 @@ class TaskController extends Controller
 {
     public function index()
     {
-        // Ambil semua tugas, urutkan dari yang belum selesai, lalu yang paling baru
-        $tasks = Task::orderBy('is_completed', 'asc')->latest()->get();
+        $userOrgId = auth()->user()->organization_id;
+
+        // Ambil tugas HANYA untuk organisasi user yang login
+        $tasks = Task::where('organization_id', $userOrgId)
+                    ->orderBy('is_completed', 'asc')
+                    ->latest()
+                    ->get();
+                    
         return view('tasks.index', compact('tasks'));
     }
 
@@ -21,10 +27,12 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high',
         ]);
 
+        // Tambah tugas baru dengan menyertakan organization_id
         Task::create([
+            'organization_id' => auth()->user()->organization_id,
             'title' => $request->title,
             'priority' => $request->priority,
-            'is_completed' => false // Tugas baru otomatis berstatus belum selesai
+            'is_completed' => false
         ]);
 
         return redirect('/tasks');
@@ -34,7 +42,11 @@ class TaskController extends Controller
     {
         $task = Task::findOrFail($id);
         
-        // Ubah status menjadi true (selesai)
+        // Pastikan tugas yang diselesaikan milik organisasi yang sama
+        if ($task->organization_id !== auth()->user()->organization_id) {
+            abort(403, 'Aksi tidak sah.');
+        }
+
         $task->update([
             'is_completed' => true
         ]);

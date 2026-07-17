@@ -9,14 +9,13 @@ class CashbookController extends Controller
 {
     public function index()
     {
-        // 1. Ambil semua riwayat kas, urutkan dari yang paling baru
-        $transactions = Cashbook::latest()->get();
+        $userOrgId = auth()->user()->organization_id;
 
-        // 2. Hitung total pemasukan dan pengeluaran
-        $totalIncome = Cashbook::where('type', 'income')->sum('amount');
-        $totalExpense = Cashbook::where('type', 'expense')->sum('amount');
-        
-        // 3. Hitung saldo akhir
+        // Ambil riwayat kas HANYA untuk organisasi user yang login
+        $transactions = Cashbook::where('organization_id', $userOrgId)->latest()->get();
+
+        $totalIncome = Cashbook::where('organization_id', $userOrgId)->where('type', 'income')->sum('amount');
+        $totalExpense = Cashbook::where('organization_id', $userOrgId)->where('type', 'expense')->sum('amount');
         $currentBalance = $totalIncome - $totalExpense;
 
         return view('cashbook.index', compact('transactions', 'totalIncome', 'totalExpense', 'currentBalance'));
@@ -24,15 +23,15 @@ class CashbookController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi inputan kas manual
         $request->validate([
             'type' => 'required|in:income,expense',
             'amount' => 'required|numeric',
             'description' => 'required',
         ]);
 
-        // Simpan ke database
+        // Simpan kas manual dengan menyertakan organization_id
         Cashbook::create([
+            'organization_id' => auth()->user()->organization_id,
             'type' => $request->type,
             'amount' => $request->amount,
             'description' => $request->description,

@@ -11,18 +11,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Hitung total saldo dari modul Cashbook
-        $totalIncome = Cashbook::where('type', 'income')->sum('amount');
-        $totalExpense = Cashbook::where('type', 'expense')->sum('amount');
+        // Ambil ID organisasi dari user yang sedang login saat ini
+        $userOrgId = auth()->user()->organization_id;
+
+        // 1. Hitung total saldo HANYA untuk organisasi user tersebut
+        $totalIncome = Cashbook::where('organization_id', $userOrgId)->where('type', 'income')->sum('amount');
+        $totalExpense = Cashbook::where('organization_id', $userOrgId)->where('type', 'expense')->sum('amount');
         $currentBalance = $totalIncome - $totalExpense;
 
-        // 2. Hitung total jenis produk dari modul Product
-        $totalProducts = Product::count();
+        // 2. Hitung total jenis produk HANYA untuk organisasi user tersebut
+        $totalProducts = Product::where('organization_id', $userOrgId)->count();
 
-        // 3. Hitung jumlah tugas yang belum diselesaikan dari modul Task
-        $pendingTasks = Task::where('is_completed', false)->count();
+        // 3. Hitung jumlah tugas menggantung HANYA untuk organisasi user tersebut
+        $pendingTasks = Task::where('organization_id', $userOrgId)->where('is_completed', false)->count();
 
-        // Lempar semua data ringkasan ke view dashboard
         return view('dashboard', compact('currentBalance', 'totalProducts', 'pendingTasks'));
     }
 }
