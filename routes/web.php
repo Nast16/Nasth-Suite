@@ -32,4 +32,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::post('/tasks/{id}/complete', [TaskController::class, 'complete']);
+
+    // Route Pengaturan Modul Organisasi
+    Route::get('/settings', [DashboardController::class, 'settings']);
+    Route::put('/settings', [DashboardController::class, 'updateSettings']);
 });

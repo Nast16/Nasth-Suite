@@ -20,12 +20,14 @@
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-danger fw-bold px-3">Logout</button>
                 </form>
+                <a href="/settings" class="btn btn-sm btn-outline-secondary fw-bold px-3">⚙️ Pengaturan Modul Bisnis</a>
             </div>
         </div>
 
         <!-- Baris Ringkasan Data (Metrik Toko) -->
         <div class="row g-4 mb-5">
             <!-- Card Uang Kas -->
+            @if($organization->has_cashbook)
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100 p-4">
                     <div class="text-muted small fw-bold text-uppercase">Total Saldo Kas</div>
@@ -33,8 +35,10 @@
                     <a href="/cashbook" class="btn btn-sm btn-outline-success mt-auto fw-bold">Kelola Buku Kas ➡️</a>
                 </div>
             </div>
+            @endif
 
             <!-- Card Total Produk -->
+            @if($organization->has_inventory)
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100 p-4">
                     <div class="text-muted small fw-bold text-uppercase">Daftar Menu Kopi</div>
@@ -42,8 +46,10 @@
                     <a href="/products" class="btn btn-sm btn-outline-primary mt-auto fw-bold">Kelola Produk & Stok ➡️</a>
                 </div>
             </div>
+            @endif
 
             <!-- Card Tugas Menggantung -->
+            @if($organization->has_tasks)
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm h-100 p-4">
                     <div class="text-muted small fw-bold text-uppercase">Tugas Belum Selesai</div>
@@ -51,6 +57,7 @@
                     <a href="/tasks" class="btn btn-sm btn-outline-danger mt-auto fw-bold">Buka Checklist Tugas ➡️</a>
                 </div>
             </div>
+            @endif
         </div>
 
         <!-- Footer -->

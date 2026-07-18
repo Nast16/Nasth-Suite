@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Cashbook;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Models\Organization;
 
 class DashboardController extends Controller
 {
@@ -25,6 +26,28 @@ class DashboardController extends Controller
         // 3. Hitung jumlah tugas menggantung HANYA untuk organisasi user tersebut
         $pendingTasks = Task::where('organization_id', $userOrgId)->where('is_completed', false)->count();
 
-        return view('dashboard', compact('currentBalance', 'totalProducts', 'pendingTasks'));
+        $organization = auth()->user()->organization; 
+        return view('dashboard', compact('currentBalance', 'totalProducts', 'pendingTasks', 'organization')); 
+    }
+
+    public function settings()
+    {
+        // Ambil data organisasi dari user yang sedang login
+        $organization = auth()->user()->organization;
+        return view('settings', compact('organization'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $organization = auth()->user()->organization;
+
+        // Jika checkbox dicentang maka nilainya true, jika tidak dicentang otomatis false
+        $organization->update([
+            'has_inventory' => $request->has('has_inventory'),
+            'has_cashbook' => $request->has('has_cashbook'),
+            'has_tasks' => $request->has('has_tasks'),
+        ]);
+
+        return redirect('/settings')->with('success', 'Konfigurasi modul berhasil diperbarui!');
     }
 }
