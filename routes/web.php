@@ -1,37 +1,43 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\DashboardController;
-use App\Http\Middleware\DisableHeadersCache;
-
-// Sekarang halaman utama root (/) akan menampilkan Dashboard Terpusat
-Route::get('/', [DashboardController::class, 'index'])->middleware(DisableHeadersCache::class);
-
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CashbookController;
 use App\Http\Controllers\TaskController;
+use App\Http\Middleware\DisableHeadersCache;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/products', [ProductController::class, 'index']);
-// Route untuk memproses data yang dikirim dari form (method-nya POST)
-Route::post('/products', [ProductController::class, 'store']);
-// {id} adalah parameter dinamis, artinya URL-nya akan berubah sesuai ID produk (misal: /products/1, /products/2)
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-// Route untuk menampilkan halaman edit (Method GET)
-Route::get('/products/{id}/edit', [ProductController::class, 'edit']);
-// Route untuk memproses update data (Method PUT)
-Route::put('/products/{id}', [ProductController::class, 'update']);
-// Route untuk memproses tombol Jual 1
-Route::post('/products/{id}/sell', [ProductController::class, 'sell']);
-// Route untuk melihat halaman buku kas
-Route::get('/cashbook', [CashbookController::class, 'index']);
-// Route untuk menyimpan transaksi kas manual
-Route::post('/cashbook', [CashbookController::class, 'store']);
-// Halaman utama daftar tugas
-Route::get('/tasks', [TaskController::class, 'index']);
+// 1. Route bawaan Breeze (Login, Register, Logout, dll)
+require __DIR__.'/auth.php';
 
-// Proses tambah tugas
-Route::post('/tasks', [TaskController::class, 'store']);
+// 2. KELOMPOK ROUTE NASTH SUITE (Wajib Login)
+Route::middleware(['auth'])->group(function () {
+    
+    // Halaman Dashboard Utama Nasth Suite
+    Route::get('/', [DashboardController::class, 'index'])->middleware(DisableHeadersCache::class);
 
-// Proses menandai tugas selesai
-Route::post('/tasks/{id}/complete', [TaskController::class, 'complete']);
+    // Modul Produk / Inventory
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::post('/products/{id}/sell', [ProductController::class, 'sell']);
+    Route::get('/products/{id}/edit', [ProductController::class, 'edit']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+    // Modul Buku Kas / Cashbook
+    Route::get('/cashbook', [CashbookController::class, 'index']);
+    Route::post('/cashbook', [CashbookController::class, 'store']);
+
+    // Modul Tugas / Tasks
+    Route::get('/tasks', [TaskController::class, 'index']);
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::post('/tasks/{id}/complete', [TaskController::class, 'complete']);
+
+    // Route Pengaturan Modul Organisasi
+    Route::get('/settings', [DashboardController::class, 'settings']);
+    Route::put('/settings', [DashboardController::class, 'updateSettings']);
+
+    // Route Manajemen Karyawan (Hanya untuk Owner)
+    Route::get('/employees', [DashboardController::class, 'employees']);
+    Route::post('/employees', [DashboardController::class, 'storeEmployee']);
+});

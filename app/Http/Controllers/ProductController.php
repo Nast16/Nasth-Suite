@@ -10,31 +10,29 @@ class ProductController extends Controller
 {
     public function index()
     {
-        // Mengambil semua data dari tabel products (seperti SELECT * FROM products)
-        $products = Product::all();
-
-        // Mengirim data tersebut ke file tampilan bernama 'products.index'
+        $userOrgId = auth()->user()->organization_id;
+        
+        // HANYA ambil produk milik organisasi si user
+        $products = Product::where('organization_id', $userOrgId)->get();
         return view('products.index', compact('products'));
     }
 
-    // Tambahkan fungsi baru ini di dalam class ProductController
     public function store(Request $request)
     {
-        // 1. Validasi data agar tidak ada yang kosong
         $request->validate([
             'name' => 'required',
             'price' => 'required|numeric',
             'stock' => 'required|numeric',
         ]);
 
-        // 2. Simpan ke database menggunakan Model Product
+        // Otomatis suntikkan organization_id saat menyimpan menu baru
         Product::create([
             'name' => $request->name,
             'price' => $request->price,
             'stock' => $request->stock,
+            'organization_id' => auth()->user()->organization_id // 👈 Kunci isolasi data
         ]);
 
-        // 3. Setelah sukses, balikkan halaman ke daftar produk lagi
         return redirect('/products');
     }
 
@@ -81,27 +79,29 @@ class ProductController extends Controller
 
     public function sell($id)
     {
-        // 1. Cari produk yang dijual
         $product = Product::findOrFail($id);
 
-        // 2. Validasi: Cek apakah stok masih ada
+        // Proteksi keamanan: pastikan produk yang mau dijual membeberkan ID organisasi yang cocok
+        if ($product->organization_id !== auth()->user()->organization_id) {
+            abort(403, 'Aksi tidak sah.');
+        }
+
         if ($product->stock < 1) {
             return redirect('/products')->with('error', 'Stok kopi sudah habis!');
         }
 
-        // 3. Kurangi stok produk sebanyak 1, lalu simpan perubahan
         $product->update([
             'stock' => $product->stock - 1
         ]);
 
-        // 4. KEAJAIBAN INTEGRASI: Otomatis catat uang masuk ke tabel Cashbook!
+        // Otomatis catat kas masuk dengan menyertakan organization_id
         Cashbook::create([
+            'organization_id' => auth()->user()->organization_id, // 👈 Kunci isolasi kas otomatis
             'type' => 'income',
             'amount' => $product->price,
             'description' => 'Penjualan: ' . $product->name,
         ]);
 
-        // 5. Kembalikan ke halaman daftar produk
         return redirect('/products');
     }
 }
