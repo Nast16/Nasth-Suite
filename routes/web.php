@@ -36,4 +36,8 @@ Route::middleware(['auth'])->group(function () {
     // Route Pengaturan Modul Organisasi
     Route::get('/settings', [DashboardController::class, 'settings']);
     Route::put('/settings', [DashboardController::class, 'updateSettings']);
+
+    // Route Manajemen Karyawan (Hanya untuk Owner)
+    Route::get('/employees', [DashboardController::class, 'employees']);
+    Route::post('/employees', [DashboardController::class, 'storeEmployee']);
 });

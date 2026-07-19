@@ -20,7 +20,10 @@
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-danger fw-bold px-3">Logout</button>
                 </form>
-                <a href="/settings" class="btn btn-sm btn-outline-secondary fw-bold px-3">⚙️ Pengaturan Modul Bisnis</a>
+                @if(auth()->user()->role === 'owner')
+                    <a href="/settings" class="btn btn-sm btn-outline-secondary fw-bold px-3">⚙️ Pengaturan Modul Bisnis</a>
+                    <a href="/employees" class="btn btn-sm btn-outline-dark fw-bold px-3">👥 Kelola Karyawan</a>
+                @endif
             </div>
         </div>
 
